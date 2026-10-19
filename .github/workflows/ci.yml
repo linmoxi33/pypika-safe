@@ -64,13 +64,17 @@ jobs:
       # Upstream 0.51.1 does not pass `mypy .` — it reports 330 errors, so the
       # original job could never be green. Rather than silence the whole check or
       # rewrite upstream typing, this gate holds the line at "no new errors": the
-      # count must not exceed the recorded baseline, and the files added by this
+      # count must not exceed the recorded baseline, and the module added by this
       # fork must be clean.
       - name: Baseline count (upstream 0.51.1)
         run: echo "BASELINE=330" >> "$GITHUB_ENV"
 
-      - name: Install mypy
-        run: pip install mypy
+      # The third-party stubs must be present, otherwise mypy reports `import-not-found`
+      # for parameterized / sqlglot / duckdb / PIL and the count is inflated by noise
+      # that has nothing to do with this fork's code.
+      - name: Install mypy and the stubs it needs
+        run: |
+          pip install mypy parameterized sqlglot duckdb pillow
 
       # `safety.py` imports `pypika.enums`, which pulls in the whole package and its
       # 300+ pre-existing errors, so imports are skipped: this gate is about the code
