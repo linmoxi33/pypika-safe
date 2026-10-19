@@ -1,0 +1,18 @@
+-r requirements.txt
+
+# Documentation
+Sphinx>=7.0.0
+sphinx-rtd-theme>=2.0.0
+bumpversion==0.5.3
+jinja2>=3.0.0
+numpydoc>=1.6.0
+
+# Testing
+parameterized>=0.9.0
+coverage>=7.0.0
+pytest>=8.0.0
+
+# Verification tools (tools/*.py). Optional at runtime, required to reproduce
+# the published verification results.
+sqlglot>=25.0.0
+duckdb>=1.0.0

@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+      - uses: pre-commit/action@v3.0.0
+
+  test:
+    name: Unit tests on Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "pypy3.9", "pypy3.10", "pypy3.11"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: Install dependencies
+        run: python -m pip install -U pip -r requirements-dev.txt
+
+      - name: Run test suite
+        run: python -m unittest discover
+
+      - name: Install coverage dependencies
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        run: pip install coveralls
+
+      - name: Run coverage
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          coverage run -m unittest discover
+          coverage xml
+          coveralls --service=github
+
+  mypy:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: |
+          pip install mypy
+          mypy .
+
+  verify:
+    name: Safety verification (fork-specific)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install verification dependencies
+        run: python -m pip install -U pip sqlglot duckdb pytest parameterized
+
+      - name: Safety test suite
+        run: python -m pytest pypika/tests/test_safety.py -q
+
+      - name: Behavioural comparison against this checkout
+        run: python tools/upstream_compare.py . --verbose
+
+      - name: MySQL literal round-trip
+        run: python tools/verify_mysql_literals.py
+
+      - name: Strict engine execution
+        run: python tools/verify_strict_engine.py
+
+      - name: Checkout upstream 0.51.1 for comparison
+        run: |
+          git clone --depth 1 --branch v0.51.1 https://github.com/kayak/pypika.git /tmp/pypika-upstream \
+            || git clone --depth 1 https://github.com/kayak/pypika.git /tmp/pypika-upstream
+
+      - name: Confirm the harness fails on upstream (expected non-zero)
+        run: |
+          set +e
+          python tools/upstream_compare.py /tmp/pypika-upstream --verbose
+          status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "::error::upstream unexpectedly passed; the harness is not discriminating"
+            exit 1
+          fi
+          echo "upstream failed as expected (exit $status)"

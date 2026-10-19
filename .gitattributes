@@ -1,0 +1,8 @@
+# Normalise line endings so the tree is identical on every platform.
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary

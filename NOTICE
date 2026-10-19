@@ -1,0 +1,56 @@
+PyPika
+Copyright 2020 Kayak.com
+Copyright 2016-2019 Timothy Heys
+
+pypika-safe
+Copyright 2026 pypika-safe contributors
+
+This product includes software developed at Kayak.com and by Timothy Heys
+(https://github.com/kayak/pypika), licensed under the Apache License, Version 2.0.
+
+Modifications in this distribution
+----------------------------------
+
+pypika-safe is a modified version of PyPika 0.51.1. The following files were
+added or changed relative to upstream:
+
+  ADDED    pypika/safety.py
+           Dialect-aware literal escaping, LIKE pattern escaping, and identifier
+           auditing helpers.
+
+  ADDED    pypika/tests/test_safety.py
+           Test suite for the safety layer (unit + real-database assertions).
+
+  ADDED    tools/upstream_compare.py
+           Behavioural comparison harness; runs against upstream or this fork.
+
+  ADDED    tools/verify_mysql_literals.py
+           MySQL literal round-trip verification via a MySQL grammar parser.
+
+  ADDED    tools/verify_strict_engine.py
+           Verification against a strict SQL engine (DuckDB).
+
+  MODIFIED pypika/terms.py
+           ValueWrapper renders string literals through escape_string_literal();
+           bound parameters carry Python values instead of pre-rendered SQL;
+           comparisons against a NULL literal emit IS [NOT] NULL; IN / NOT IN
+           reject NULL members and empty lists; new LikeCriterion and
+           Field.like_literal() / not_like_literal().
+
+  MODIFIED pypika/queries.py
+           QueryBuilder.BACKSLASH_ESCAPES knob, propagated through kwargs.
+
+  MODIFIED pypika/__init__.py
+           Re-exports of the new public API.
+
+  MODIFIED setup.py, MANIFEST.in
+           Distribution name pypika-safe; packaging metadata.
+
+  MODIFIED pypika/tests/test_parameter.py
+           Two assertions updated to match the corrected parameter behaviour
+           (dates are now passed to the driver as datetime.date, not as a string).
+
+All other files are unmodified from upstream PyPika 0.51.1.
+
+The full text of the Apache License, Version 2.0 is in LICENSE.txt. Section 4 of
+that license requires this NOTICE file to be retained in redistributions.

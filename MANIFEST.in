@@ -1,0 +1,8 @@
+include README.md
+include README.rst
+include NOTICE
+include LICENSE.txt
+include CHANGELOG.md
+include requirements.txt
+recursive-include tools *.py
+recursive-include tools/assets *.png

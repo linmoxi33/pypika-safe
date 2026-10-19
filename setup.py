@@ -1,0 +1,83 @@
+import ast
+
+from setuptools import setup
+
+
+def readme():
+    with open('README.md', 'rb') as f:
+        return f.read().decode('UTF-8')
+
+
+def version():
+    path = 'pypika/__init__.py'
+    with open(path, 'r') as file:
+        t = compile(file.read(), path, 'exec', ast.PyCF_ONLY_AST)
+        for node in (n for n in t.body if isinstance(n, ast.Assign)):
+            if len(node.targets) == 1:
+                name = node.targets[0]
+                if isinstance(name, ast.Name) and name.id in ('__version__', '__version_info__', 'VERSION'):
+                    v = node.value
+                    if isinstance(v, ast.Constant):
+                        return str(v.value)
+
+                    if isinstance(v, ast.Tuple):
+                        r = []
+                        for e in v.elts:
+                            if isinstance(e, ast.Constant):
+                                r.append(str(e.value))
+                        return '.'.join(r)
+
+
+setup(
+      # Application name:
+      name="pypika-safe",
+
+      # Version number:
+      version=version(),
+
+      # Application author details:
+      author="Timothy Heys",
+      author_email="theys@kayak.com",
+
+      # Fork maintainer (see NOTICE)
+      maintainer="pypika-safe contributors",
+
+      # License
+      license='Apache License Version 2.0',
+
+      # Packages
+      packages=["pypika", "pypika.clickhouse"],
+
+      # Include additional files into the package
+      package_data={"pypika": ["py.typed"]},
+      include_package_data=True,
+
+      install_requires=["typing_extensions>=4.5.0; python_version<'3.11'"],
+
+      # Details
+      url="https://github.com/kayak/pypika",
+
+      description="A SQL query builder API for Python, with dialect-aware literal escaping",
+      long_description=readme(),
+      long_description_content_type="text/markdown",
+
+      classifiers=[
+          'License :: OSI Approved :: Apache Software License',
+          'Development Status :: 5 - Production/Stable',
+          'Intended Audience :: Developers',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: PL/SQL',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Topic :: Scientific/Engineering :: Information Analysis',
+          'Topic :: Scientific/Engineering :: Mathematics',
+          'Operating System :: POSIX',
+          'Operating System :: MacOS :: MacOS X',
+          'Operating System :: Microsoft :: Windows',
+      ],
+      keywords=('pypika python query builder querybuilder sql mysql postgres psql oracle vertica aggregated '
+                'relational database rdbms business analytics bi data science analysis pandas '
+                'orm object mapper sql-injection escaping'),
+
+      # Dependent packages (distributions)
+      test_suite="pypika.tests",
+)
