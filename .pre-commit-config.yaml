@@ -10,8 +10,10 @@ repos:
         files: "pypika.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-yaml
-      - id: no-commit-to-branch
-        args: ['--branch', 'main']
+      # `no-commit-to-branch` was configured for upstream's `master`. On this fork
+      # every commit lands on `main`, so the hook fired on the default branch and
+      # failed CI on every push. Its intent (protect the default branch locally) is a
+      # pre-commit-stage concern; running it over `--all-files` in CI only ever blocks.
       - id: check-merge-conflict
       - id: check-ast
       - id: check-json

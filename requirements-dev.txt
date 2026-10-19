@@ -12,7 +12,6 @@ parameterized>=0.9.0
 coverage>=7.0.0
 pytest>=8.0.0
 
-# Verification tools (tools/*.py). Optional at runtime, required to reproduce
-# the published verification results.
-sqlglot>=25.0.0
-duckdb>=1.0.0
+# sqlglot and duckdb live in requirements-verify.txt, not here: they are only needed
+# by tools/*.py, and duckdb has no PyPy wheel (it compiles from source and fails), so
+# listing it here broke the PyPy jobs in the test matrix.

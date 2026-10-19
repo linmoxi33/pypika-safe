@@ -52,7 +52,7 @@ Tracked upstream as [#844](https://github.com/kayak/pypika/issues/844) (open) an
 Reproduce:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt -r requirements-verify.txt
 python -m pytest pypika/tests -q
 python tools/upstream_compare.py .
 python tools/verify_mysql_literals.py

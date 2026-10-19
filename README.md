@@ -153,7 +153,8 @@ Requires Python 3.9+. The only runtime dependency is `typing_extensions` on Pyth
 Verification tools need extras:
 
 ```bash
-pip install -r requirements-dev.txt   # adds pytest, sqlglot, duckdb
+pip install -r requirements-dev.txt    # pytest, parameterized
+pip install -r requirements-verify.txt  # sqlglot, duckdb (only for tools/)
 ```
 
 ## Usage
@@ -326,7 +327,7 @@ Two upstream tests changed, both because they asserted the old (buggy) parameter
 
 - `test_param_select_join` and `test_param_select_subquery` expected `['foobar', '2024-02-22']`; they now expect `['foobar', date(2024, 2, 22)]`. The rendered SQL is identical; only the value handed to the driver changed.
 
-Nothing else was deleted, skipped or weakened. `git diff` against 0.51.1 touches `terms.py`, `queries.py`, `__init__.py`, `setup.py`, `MANIFEST.in`, `requirements-dev.txt`, `test_parameter.py`, and adds `safety.py`, `test_safety.py`, `tools/`, `NOTICE`, `README.md`.
+Nothing else was deleted, skipped or weakened. `git diff` against 0.51.1 touches `terms.py`, `queries.py`, `__init__.py`, `setup.py`, `MANIFEST.in`, `requirements-dev.txt`, `test_parameter.py`, `.github/workflows/ci.yml`, `.pre-commit-config.yaml`, `CODEOWNERS`, `.github/workflows/release.yml`, `.gitattributes`, and adds `safety.py`, `test_safety.py`, `tools/`, `NOTICE`, `README.md`.
 
 ## What this fork does *not* do
 

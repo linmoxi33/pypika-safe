@@ -1,0 +1,7 @@
+# Dependencies for tools/ (the verification scripts). Not needed to use the library
+# or to run the test suite.
+#
+# Kept separate from requirements-dev.txt on purpose: duckdb has no PyPy wheel, so
+# putting it in the shared dev requirements broke every PyPy job in the CI matrix.
+sqlglot>=25.0.0
+duckdb>=1.0.0

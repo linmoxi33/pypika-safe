@@ -243,6 +243,6 @@ see the full list; it reports 3 pass / 12 fail on 0.51.1.
 - [ ] `LICENSE.txt` 与上游逐字节一致（`sha256sum` 对比）
 - [ ] `NOTICE` 包含原始版权 + fork 版权 + 改动文件清单
 - [ ] README 首屏写明 fork 自哪个版本、非官方
-- [ ] 测试可复现：干净环境 `pip install -r requirements-dev.txt` 后四条命令全绿
+- [ ] 测试可复现：干净环境 `pip install -r requirements-dev.txt -r requirements-verify.txt` 后四条命令全绿
 - [ ] Release 附件里的 ZIP 与 tag 内容一致
 - [ ] 不在上游 issue 里做 fork 推广

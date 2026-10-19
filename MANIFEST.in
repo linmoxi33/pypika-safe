@@ -4,5 +4,8 @@ include NOTICE
 include LICENSE.txt
 include CHANGELOG.md
 include requirements.txt
+include requirements-dev.txt
+include requirements-verify.txt
+include RELEASE_NOTES.md
 recursive-include tools *.py
 recursive-include tools/assets *.png
