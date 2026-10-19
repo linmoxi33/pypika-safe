@@ -44,7 +44,7 @@ Tracked upstream as [#844](https://github.com/kayak/pypika/issues/844) (open) an
 
 | Check | Upstream 0.51.1 | This fork |
 |---|---|---|
-| `pytest pypika/tests` | 1099 passed | **1175 passed**, 117 subtests |
+| `pytest pypika/tests` | 1099 passed | **1176 passed**, 119 subtests |
 | `tools/upstream_compare.py` (15 properties) | 3 passed / 12 failed | **15 passed / 0 failed** |
 | `tools/verify_mysql_literals.py` (13 payloads) | 9/13 round-trip | **13/13 round-trip** |
 | `tools/verify_strict_engine.py` (DuckDB) | `IN ()` → parser error; `=null` → 0 rows | **PASS** |

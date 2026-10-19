@@ -36,7 +36,7 @@ Fork of kayak/pypika 0.51.1 (Apache-2.0).
 - pass Python values to drivers instead of pre-rendered SQL fragments
 - add Field.like_literal() with the matching ESCAPE clause
 - add assert_safe_identifiers() audit
-- 76 new tests; 1099 upstream tests still pass"
+- 77 new tests; 1099 upstream tests still pass"
 
 git branch -M main
 gh repo create linmoxi33/pypika-safe --public --source=. --remote=origin \

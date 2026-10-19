@@ -40,7 +40,7 @@ Full detail in [README.md](README.md) and [NOTICE](NOTICE).
   matching user input literally, with the matching `ESCAPE` clause.
 - `QueryBuilder.BACKSLASH_ESCAPES` (and a `backslash_escapes=` kwarg on `get_sql`)
   for MySQL sessions running with `NO_BACKSLASH_ESCAPES`.
-- `pypika/tests/test_safety.py`: 76 tests, including real-SQLite execution assertions.
+- `pypika/tests/test_safety.py`: 77 tests, including real-SQLite execution assertions.
 - `tools/upstream_compare.py`, `tools/verify_mysql_literals.py`,
   `tools/verify_strict_engine.py`.
 

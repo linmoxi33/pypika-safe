@@ -249,15 +249,17 @@ assert_safe_identifiers(q, quote_char=None)
 
 Three independent layers. All numbers below are from this repository at the commit in the ZIP; the scripts are re-runnable.
 
+Every one of them runs in CI (`.github/workflows/ci.yml`), and the workflow also asserts that the comparison harness *fails* on a fresh upstream checkout — a harness that passes everything would prove nothing.
+
 ### 1. Test suite
 
 ```
 $ pytest pypika/tests -q
-1175 passed, 117 subtests passed
+1176 passed, 119 subtests passed
 ```
 
 - 1099 upstream tests: **all still pass**.
-- 76 new tests in `pypika/tests/test_safety.py`.
+- 77 new tests in `pypika/tests/test_safety.py`.
 - 2 upstream assertions were updated, not deleted — see [Migration](#compatibility-and-migration).
 
 The new tests assert *observable behaviour*, not internal structure: rendered SQL strings, plus rows returned by a real in-memory SQLite database (`RealDatabaseTests`).
@@ -302,6 +304,10 @@ RESULT: PASS
 
 > **Not verified:** no MySQL/PostgreSQL/ClickHouse server was available in the build environment, so the dialect-specific behaviour is verified by grammar round-trip and by strict-engine execution, not by a live server. If you can run one, `tools/verify_mysql_literals.py` is the script to extend.
 
+### On the inherited type-check job
+
+`mypy .` reports **330 errors on upstream 0.51.1 itself**, so that job was red before this fork existed. Rather than delete it or rewrite upstream typing, the job now enforces two narrower things: the files this fork added must be type-clean, and the total error count must not exceed the recorded upstream baseline of 330. The current count is 329.
+
 ---
 
 ## Compatibility and migration
@@ -342,7 +348,7 @@ pypika/
   queries.py           # modified: BACKSLASH_ESCAPES knob
   __init__.py          # modified: re-exports
   tests/
-    test_safety.py     # new: 76 tests
+    test_safety.py     # new: 77 tests
     test_parameter.py  # 2 assertions updated
 tools/
   upstream_compare.py       # 15-property comparison harness
