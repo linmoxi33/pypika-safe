@@ -182,6 +182,8 @@ class InjectionShapeTests(TestCase):
     """Parse the generated SQL and assert the payload never becomes a new AST node."""
 
     t = Table("users")
+
+    #: Payloads whose literal must round-trip byte-for-byte through the parser.
     PAYLOADS = (
         "O'Brien",
         "a\\",
@@ -189,11 +191,21 @@ class InjectionShapeTests(TestCase):
         'a"b',
         "line1\nline2",
         "a\tb",
-        "a\x1ab",
         "名字 'quoted'",
         "\\'; DROP TABLE users; --",
         "'; SELECT * FROM secrets; --",
     )
+
+    #: Control characters that MySQL renders as named escapes (``\Z`` for Ctrl-Z).
+    #: Whether a given sqlglot version decodes ``\Z`` back to ``\x1a`` varies, so for
+    #: these only the structural properties are asserted; the exact rendering is
+    #: pinned by ``EscapeStringLiteralTests.test_control_characters_are_named_in_backslash_dialects``.
+    CONTROL_PAYLOADS = ("a\x1ab", "a\x00b", "a\rb", "a\bb")
+
+    def _assert_no_new_clause(self, tree, exp, payload: str) -> None:
+        self.assertEqual(0, len(list(tree.find_all(exp.Or))), f"payload {payload!r} produced an OR")
+        self.assertEqual(0, len(list(tree.find_all(exp.Drop))), f"payload {payload!r} produced a DROP")
+        self.assertEqual(1, len(list(tree.find_all(exp.Select))), f"payload {payload!r} produced a second SELECT")
 
     def test_mysql_payloads_stay_single_literal(self):
         try:
@@ -206,11 +218,27 @@ class InjectionShapeTests(TestCase):
             with self.subTest(payload=payload):
                 sql = MySQLQuery.from_(self.t).select(self.t.star).where(self.t.name == payload).get_sql()
                 tree = sqlglot.parse_one(sql, dialect="mysql")
-                self.assertEqual(0, len(list(tree.find_all(exp.Or))), f"payload {payload!r} produced an OR")
-                self.assertEqual(0, len(list(tree.find_all(exp.Drop))), f"payload {payload!r} produced a DROP")
-                self.assertEqual(1, len(list(tree.find_all(exp.Select))), f"payload {payload!r} produced a second SELECT")
+                self._assert_no_new_clause(tree, exp, payload)
                 literals = [node.this for node in tree.find_all(exp.Literal) if node.is_string]
                 self.assertEqual([payload], literals, "literal did not round-trip")
+
+    def test_mysql_control_payloads_stay_single_literal(self):
+        try:
+            import sqlglot
+            from sqlglot import exp
+        except ImportError:  # pragma: no cover
+            self.skipTest("sqlglot not installed")
+
+        for payload in self.CONTROL_PAYLOADS:
+            with self.subTest(payload=payload):
+                sql = MySQLQuery.from_(self.t).select(self.t.star).where(self.t.name == payload).get_sql()
+                tree = sqlglot.parse_one(sql, dialect="mysql")
+                self._assert_no_new_clause(tree, exp, payload)
+                self.assertEqual(
+                    1,
+                    len([node for node in tree.find_all(exp.Literal) if node.is_string]),
+                    f"payload {payload!r} did not stay a single literal",
+                )
 
     def test_ansi_payloads_stay_single_literal(self):
         try:
@@ -223,7 +251,7 @@ class InjectionShapeTests(TestCase):
             with self.subTest(payload=payload):
                 sql = PostgreSQLQuery.from_(self.t).select(self.t.star).where(self.t.name == payload).get_sql()
                 tree = sqlglot.parse_one(sql, dialect="postgres")
-                self.assertEqual(0, len(list(tree.find_all(exp.Or))))
+                self._assert_no_new_clause(tree, exp, payload)
                 literals = [node.this for node in tree.find_all(exp.Literal) if node.is_string]
                 self.assertEqual([payload], literals)
 
@@ -331,15 +359,13 @@ class NullCriterionTests(TestCase):
 
     def test_eq_none_in_a_join_criterion(self):
         other = Table("profiles")
-        q = Query.from_(self.t).join(other).on(self.t.id == other.user_id).select("*").where(other.bio == None)  # noqa: E711
+        q = (
+            Query.from_(self.t).join(other).on(self.t.id == other.user_id).select("*").where(other.bio == None)
+        )  # noqa: E711
         self.assertIn('"bio" IS NULL', q.get_sql())
 
     def test_eq_none_inside_an_or_expression(self):
-        q = (
-            Query.from_(self.t)
-            .select("*")
-            .where((self.t.deleted_at == None) | (self.t.name == "x"))  # noqa: E711
-        )
+        q = Query.from_(self.t).select("*").where((self.t.deleted_at == None) | (self.t.name == "x"))  # noqa: E711
         self.assertIn('"deleted_at" IS NULL', q.get_sql())
         self.assertNotIn("=null", q.get_sql())
 

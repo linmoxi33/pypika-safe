@@ -11,7 +11,7 @@ repos:
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-yaml
       - id: no-commit-to-branch
-        args: ['--branch', 'master']
+        args: ['--branch', 'main']
       - id: check-merge-conflict
       - id: check-ast
       - id: check-json

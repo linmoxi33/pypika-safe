@@ -11,7 +11,12 @@ a new clause: no extra OR / DROP / SELECT nodes may appear.
 
 from __future__ import annotations
 
+import os
 import sys
+
+# Allow running as `python tools/verify_mysql_literals.py` from the repo root
+# without installing the package.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import sqlglot
 from sqlglot import exp

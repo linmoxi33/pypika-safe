@@ -5,6 +5,13 @@ matters.  DuckDB follows the standard and raises a parser error, which is what
 PostgreSQL / Oracle / MSSQL also do.
 """
 
+import os
+import sys
+
+# Allow running as `python tools/verify_strict_engine.py` from the repo root
+# without installing the package.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import duckdb
 
 from pypika import Query, Table

@@ -181,7 +181,7 @@ class Term(Node):
         return LikeCriterion(
             Matching.like,
             self,
-            self.wrap_constant(escape_like_pattern(pattern, escape_char)),
+            ValueWrapper(escape_like_pattern(pattern, escape_char)),
             escape_char,
         )
 
@@ -190,7 +190,7 @@ class Term(Node):
         return LikeCriterion(
             Matching.not_like,
             self,
-            self.wrap_constant(escape_like_pattern(pattern, escape_char)),
+            ValueWrapper(escape_like_pattern(pattern, escape_char)),
             escape_char,
         )
 
@@ -953,8 +953,10 @@ class BasicCriterion(Criterion):
             # `col = NULL` / `col <> NULL` evaluate to UNKNOWN and match nothing, so a
             # filter written with `field == None` would silently return zero rows.
             # Emit the IS [NOT] NULL form the caller actually meant.
-            sql = "{left} IS {not_}NULL".format(left=self.left.get_sql(quote_char=quote_char, **kwargs),
-                                                not_="NOT " if self.comparator is Equality.ne else "")
+            sql = "{left} IS {not_}NULL".format(
+                left=self.left.get_sql(quote_char=quote_char, **kwargs),
+                not_="NOT " if self.comparator is Equality.ne else "",
+            )
         else:
             sql = "{left}{comparator}{right}".format(
                 comparator=self.comparator.value,

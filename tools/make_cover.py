@@ -40,7 +40,7 @@ def vgradient(size, top, bottom) -> Image.Image:
     for y in range(size[1]):
         t = y / max(1, size[1] - 1)
         d.point((0, y), tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
-    return img.resize(size, Image.BILINEAR)
+    return img.resize(size, Image.Resampling.BILINEAR)
 
 
 def main() -> None:
@@ -141,7 +141,7 @@ def main() -> None:
         ("13/13", "payloads"),
         ("2", "upstream test lines changed"),
     ]
-    x = pad
+    x = float(pad)
     y_num = 548
     num_font = font(F_MONO_BOLD, 27)
     lbl_font = font(F_BODY, 15)
