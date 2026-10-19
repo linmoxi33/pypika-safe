@@ -1,6 +1,6 @@
 # 开源发布材料 · pypika-safe
 
-> 本文档是发布时可直接复制粘贴的文案包。仓库链接里的 `<OWNER>` 发布时替换。
+> 本文档是发布时可直接复制粘贴的文案包。仓库已发布在 `linmoxi33/pypika-safe`。
 > 项目本体说明见 `README.md`，版本变更见 `RELEASE_NOTES.md`。
 
 ---
@@ -136,7 +136,7 @@ SELECT * FROM `users` WHERE `name`='x\\'' OR 1=1 -- '
 
 **许可证**：Apache-2.0，`LICENSE.txt` 与上游逐字节一致，`NOTICE` 列了原始版权（Kayak.com、Timothy Heys）、fork 版权和完整改动文件清单 —— Apache-2.0 第 4 条要求保留 NOTICE，这条不能省。
 
-代码：`https://github.com/<OWNER>/pypika-safe`
+代码：`https://github.com/linmoxi33/pypika-safe`
 
 ---
 
@@ -183,7 +183,7 @@ How I verified it, because "I fixed a security bug" is cheap to claim:
 
 Apache-2.0, inherited. `LICENSE.txt` is byte-identical to upstream; `NOTICE` lists the original copyright, the fork copyright, and every modified file, as section 4 requires.
 
-`https://github.com/<OWNER>/pypika-safe`
+`https://github.com/linmoxi33/pypika-safe`
 
 ---
 
